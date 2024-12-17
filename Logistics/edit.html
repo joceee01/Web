@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Job Management</title>
+    <link rel="stylesheet" href="main.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <style>
+        .main-container {
+            padding: 10px;
+        }
+
+        .container-content {
+            padding: 20px 15px;
+            border-radius: 5px;
+        }
+
+        .form-control-plaintext {
+            border-bottom: 1px solid #ced4da;
+        }
+
+        /* Custom button spacing */
+        .me-2-custom {
+            margin-right: 0.8rem;
+        }
+
+        /* Flex alignment for all buttons */
+        .buttons-container {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+        }
+
+        /* Custom spacing for bottom elements */
+        .button-row {
+            margin-top: 15px;
+        }
+
+        .nav-tabs .nav-link {
+            padding: 10px 15px;
+        }
+
+        .tab-content > .tab-pane {
+            padding-top: 15px;
+        }
+
+        .table-scrollable {
+            overflow-x: auto;
+        }
+
+        .btn-group-custom {
+            display: flex;
+            gap: 10px;
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            white-space: nowrap;
+        }
+
+        .add-tpt-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .btn-add-tpt {
+            margin-right: 5px;
+        }
+
+        .dropdown {
+            float: left;
+            width: 80px;
+        }
+
+        .tab-control-button-container {
+            text-align: right;
+            /* Aligns the buttons to the right */
+            margin-top: 10px;
+            /* Adds some spacing above the buttons */
+        }
+
+            .tab-control-button-container button {
+                margin-left: 10px;
+                /* Adds spacing between buttons */
+            }
+
+        .header-buttons .btn {
+            margin-right: 10px;
+        }
+
+        .container-table th,
+        .container-table td {
+            vertical-align: middle;
+            text-align: center;
+            white-space: nowrap;
+            /* Prevents text from wrapping */
+        }
+
+        .container-table thead {
+            background-color: #f8f9fa;
+        }
+
+        .table-responsive {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .btn-delete {
+            color: blue;
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            /* Aligns the checkbox and label vertically */
+        }
+
+            .checkbox-container input {
+                margin-right: 8px;
+                /* Adds some space between the checkbox and the label */
+            }
+
+        .mobile-margin-top {
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-margin-top {
+                margin-top: 30px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid mt-4">
+        <!-- Job Info Section -->
+        <div class="row mb-2">
+            <div class="col-lg-1">
+                <label for="jobNo" class="form-label p-2">Job No</label>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <select id="jobNo" class="form-select">
+                    <option value="I095481" selected>I095481</option>
+                </select>
+            </div>
+            <div class="col-md-6 mt-1">
+                <button id="retrieve" class="btn btn-sm btn-primary me-1-custom">Retrieve</button>
+                <button id="addNewJob" class="btn btn-sm btn-primary me-1-custom">Add New Job</button>
+            </div>
+        </div>
+
+        <!-- IMP Details Section -->
+        <div class="main-container">
+            <div class="row mt-2 mb-2">
+                <div class="col-md-1">
+                    <h4>IMP</h4>
+                </div>
+                <!-- Buttons Container -->
+                <div class="col-md-11 buttons-container mb-2">
+                    <button class="btn btn-sm btn-primary me-2-custom">Save Job</button>
+                    <button class="btn btn-sm btn-primary me-2-custom">Ops Finished</button>
+                    <button class="btn btn-sm btn-secondary me-2-custom">Ops Re-open</button>
+                    <button class="btn btn-sm btn-primary me-2-custom">Void Job</button>
+                    <button class="btn btn-sm btn-primary me-2-custom">Print JobSheet</button>
+                    <button class="btn btn-sm btn-primary me-2-custom">Job P&L</button>
+                    <button class="btn btn-sm btn-primary me-2-custom">Show Attachments</button>
+                    <button class="btn btn-sm btn-primary me-2-custom">Event Log</button>
+                </div>
+            </div>
+
+            <div class="container-content">
+                <div class="row">
+                    <!-- Job Info -->
+                    <div class="col-md-2">
+                        <label for="jobNo" class="form-label small-font small-font">Job No</label>
+                        <input type="text" id="jobNo" disabled class="form-control" value="10981">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="jobDate" class="form-label small-font small-font">Job Date</label>
+                        <input type="date" id="jobDate" class="form-control" value="2024-10-11">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="status" class="form-label small-font small-font">Status</label>
+                        <select id="status" class="form-select">
+                            <option value="Confirmed" selected>Confirmed</option>
+                            <option value="Cancelled" selected>Cancelled</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <label for="quoteNo" class="form-label small-font small-font">Quote No</label>
+                        <input type="text" id="quoteNo" class="form-control" value="I095481">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="billingOption" class="form-label small-font small-font">Billing Option</label>
+                        <input type="text" id="billingOption" class="form-control" value="10981">
+                    </div>
+                    <div class="col-md-2">
+                        <label for="voidRemarks" class="form-label small-font small-font">Void Remarks</label>
+                        <input type="text" id="voidRemarks" class="form-control" value="">
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="container-content">
+                <div class="row">
+                    <!-- Client Info Section -->
+                    <div class="row">
+                        <div class="col-md-4">
+                            <label for="client" class="form-label small-font small-font">Client</label>
+                            <div class="d-flex align-items-center mb-1">
+                                <input type="text" id="client" class="form-control d-inline"
+                                       value="NIPPON EXPRESS (SINGAPORE)">
+                                &nbsp;<button type="button" class="btn btn-primary btn-sm d-inline">View</button>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="clientRef" class="form-label small-font small-font">Client Ref</label>
+                            <input type="text" id="clientRef" class="form-control" value="OSI30674">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="orderedBy" class="form-label small-font small-font">Ordered By</label>
+                            <input type="text" id="orderedBy" class="form-control" value="INTAN MAHMOOD">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="emailAddress" class="form-label small-font small-font">Email Address</label>
+                            <input type="text" id="emailAddress" class="form-control" value="">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="emailSubject" class="form-label small-font small-font">Email Subject</label>
+                            <input type="text" id="emailSubject" class="form-control" value="">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container-content">
+                <!-- Tabs Section -->
+                <ul class="nav nav-tabs" id="controlTabs">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="job-tab" data-bs-toggle="tab" href="#job">Job</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="transport-tab" data-bs-toggle="tab" href="#transport">Transport</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="costing-tab" data-bs-toggle="tab" href="#costing">Costing</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="attachments-tab" data-bs-toggle="tab"
+                           href="#attachments">Attachments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="control-tab" data-bs-toggle="tab" href="#control">Control</a>
+                    </li>
+                </ul>
+
+                <div class="tab-content">
+                    <div class="tab-pane fade show active" id="job">
+                        <!-- Vessel / Shipment Section -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <h4>Vessel / Shipment</h4>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="vessel" class="form-label small-font small-font">Vessel</label>
+                                <input type="text" id="vessel" class="form-control" value="SOL PIONEER">
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="voyage" class="form-label small-font small-font">Voyage</label>
+                                <input type="text" id="voyage" class="form-control" value="2414S">
+                            </div>
+
+                            <div class="col-md-2">
+                                <label for="pol" class="form-label small-font">POL</label>
+                                <input type="text" id="pol" class="form-control">
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="etaDate" class="form-label small-font">ETA Date/Time</label>
+                                <div class="input-group">
+                                    <input type="date" id="etaDate" class="form-control" value="2024-10-12">
+                                    <input type="time" id="etaTime" class="form-control" value="03:30">
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="terminal" class="form-label small-font">Terminal</label>
+                                <input type="text" id="terminal" class="form-control" value="BT">
+                            </div>
+                        </div>
+
+                        <div class="row mt-3">
+                            <div class="col-md-2">
+                                <label for="carrier" class="form-label small-font">Carrier</label>
+                                <input type="text" id="carrier" class="form-control" value="VA">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="returnYard" class="form-label small-font">Return Yard</label>
+                                <select id="returnYard" class="form-select">
+                                    <option value="TONG TEPONG" selected>TONG TEPONG</option>
+                                    <option value="TCD02">TCD02</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="permitNos" class="form-label small-font">Permit No(s)</label>
+                                <input type="text" id="permitNos" class="form-control">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="carrierBLNo" class="form-label small-font">Carrier BL No</label>
+                                <input type="text" id="carrierBLNo" class="form-control">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="returnLastDate" class="form-label small-font">Return Last Date</label>
+                                <input type="date" id="returnLastDate" class="form-control">
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <h4>Trip</h4>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="collectFrom" class="form-label small-font">Collect From</label>
+                                <textarea id="collectFrom" class="form-control" rows="4"
+                                          cols="50">GATE 04 (PPT)</textarea>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="sendTo" class="form-label small-font">Send To</label>
+                                <textarea id="sendTo" class="form-control" rows="4"
+                                          cols="50">ASIA INDUSTRIAL, 8 GUL RD, SINGAPORE 629341</textarea>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="truckingInstruction" class="form-label small-font">Trucking Instruction</label>
+                                <textarea id="truckingInstruction" class="form-control" rows="4" cols="50"></textarea>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="internalRemark" class="form-label small-font">Internal Remark</label>
+                                <textarea id="internalRemark" class="form-control" rows="4"
+                                          cols="50">S/R 15/10 1000</textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="transport">
+                        <!-- Add Tpt Button -->
+                        <div class="add-tpt-container">
+                            <button class="btn btn-sm btn-primary btn-add-tpt">Add TPT</button>
+                            <select class="form-select dropdown">
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3">3</option>
+                            </select>
+                        </div>
+
+                        <!-- Table for Payables -->
+                        <div class="table-responsive mt-3">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Trip No</th>
+                                        <th>Trip Type</th>
+                                        <th>Status</th>
+                                        <th>Qty/M3/Kgs</th>
+                                        <th>Pickup from</th>
+                                        <th>Driver</th>
+                                        <th>Date</th>
+                                        <th>Bill/Ot/Permit</th>
+                                        <th>CFS</th>
+                                        <th>COD</th>
+                                        <th>Permit No</th>
+                                        <th>#</th>
+                                        <th>#</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="14" class="text-center">No data to display</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                    <div class="tab-pane fade" id="costing">
+                        <!-- Buttons for Add Invoice, CN, DN -->
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <button class="btn btn-sm btn-primary">Add Invoice</button>
+                                <button class="btn btn-sm btn-primary">Add CN</button>
+                                <button class="btn btn-sm btn-primary">Add DN</button>
+                            </div>
+                        </div>
+
+                        <!-- Table for Invoices -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Inv No</th>
+                                        <th>Invoice Date</th>
+                                        <th>Party To</th>
+                                        <th>DocAmt</th>
+                                        <th>Total</th>
+                                        <th>Balance</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="8" class="text-center">No data to display</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Add Payable Button -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <button class="btn btn-sm btn-primary">Add Payable</button>
+                            </div>
+                        </div>
+
+                        <!-- Table for Payables -->
+                        <div class="table-responsive mt-3">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Doc Type</th>
+                                        <th>Doc No</th>
+                                        <th>Doc Date</th>
+                                        <th>Party To</th>
+                                        <th>Currency</th>
+                                        <th>DocAmt</th>
+                                        <th>LocAmt</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="8" class="text-center">No data to display</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Attachments Tab -->
+                    <div class="tab-pane fade" id="attachments">
+                        <!-- Attachments-related content goes here -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <button class="btn btn-sm btn-primary">Show Attachments</button>
+                                <button class="btn btn-sm btn-primary">Upload Attachments</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane fade" id="control">
+                        <!-- Row for Job Open Remark, Billing Master No, and Show In Billing -->
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="jobRemark" class="form-label small-font">Job Open Remark</label>
+                                <textarea id="jobRemark" class="form-control" rows="4" cols="50"></textarea>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="billingNo" class="form-label small-font">Billing Master No</label>
+                                <input type="text" id="billingNo" class="form-control" placeholder="Enter billing no.">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="showBilling" class="form-label small-font">Show In Billing</label>
+                                <select id="showBilling" class="form-control">
+                                    <option value="">Select</option>
+                                    <option value="yes">Yes</option>
+                                    <option value="no">No</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row for buttons -->
+                        <div class="mb-3 tab-control-button-container">
+                            <button class="btn btn-sm btn-primary">Close Job</button>
+                            <button class="btn btn-sm btn-primary">Void Job</button>
+                            <button class="btn btn-sm btn-primary">Event Log</button>
+                        </div>
+
+                        <!-- Table for Actions, Remarks, etc. -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Action</th>
+                                        <th>Remark</th>
+                                        <th>Invoice</th>
+                                        <th>User</th>
+                                        <th>Time <i class="fa fa-arrow-down"></i></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" class="text-center">No data to display</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="main-container mt-2">
+            <!-- Containers Section -->
+            <div class="container-section mt-2 mb-2">
+                <h4>Containers</h4>
+                <!-- Header Section -->
+                <div class="d-flex justify-content-between mb-3">
+                    <div>
+                        <button class="btn btn-sm btn-secondary" disabled>ESN Created</button>
+                        <button class="btn btn-sm btn-primary">EDO Released</button>
+                    </div>
+                </div>
+
+                <div class="container-content">
+                    <!-- Filters Section -->
+                    <div class="row g-2 mb-3">
+                        <div class="col-md">
+                            <label for="nums" class="form-label small-font">Nums</label>
+                            <select id="nums" class="form-select">
+                                <option>1</option>
+                                <option>2</option>
+                            </select>
+                        </div>
+                        <div class="col-md">
+                            <label for="type" class="form-label small-font">Type</label>
+                            <select id="type" class="form-select">
+                                <option>...</option>
+                            </select>
+                        </div>
+                        <div class="col-md">
+                            <label for="requestDate" class="form-label small-font">Request Date</label>
+                            <input type="date" id="requestDate" class="form-control">
+                        </div>
+                        <div class="col-md">
+                            <label for="serviceType" class="form-label small-font">Service Type</label>
+                            <select id="serviceType" class="form-select">
+                                <option>ROUND TRIP</option>
+                                <option>ONE WAY</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="remark" class="form-label small-font">Remark</label>
+                            <input type="text" id="remark" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="collectFrom" class="form-label small-font">Collect From</label>
+                            <input type="text" id="collectFrom" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="sendTo" class="form-label small-font">Send To</label>
+                            <input type="text" id="sendTo" class="form-control">
+                        </div>
+                        <div class="col-md-2">
+                            <label for="returnYard" class="form-label small-font">Return Yard</label>
+                            <input type="text" id="returnYard" class="form-control">
+                        </div>
+                        <div class="col-md d-flex align-items-center">
+                            <button class="btn btn-sm btn-primary mt-2">Add Cont</button>
+                        </div>
+                    </div>
+
+                    <!-- Table Section -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered container-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Request Date</th>
+                                    <th>Portnet Status</th>
+                                    <th>Ready</th>
+                                    <th>Container</th>
+                                    <th>Seal No</th>
+                                    <th>Cont Type</th>
+                                    <th>Tare Wt</th>
+                                    <th>VGM</th>
+                                    <th>Heavy Trailer</th>
+                                    <th>Remark</th>
+                                    <th>Collect From</th>
+                                    <th>Send To</th>
+                                    <th>Return Yard</th>
+                                    <th>Billing Zone</th>
+                                    <th>Service Type</th>
+                                    <th>DG Class</th>
+                                    <th>DG Direct</th>
+                                    <th>Chassis Demurrage Days</th>
+                                    <th>#</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>14/10/2024</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>FCIU 5227717</td>
+                                    <td></td>
+                                    <td>20GP</td>
+                                    <td>0.000</td>
+                                    <td>9970.000</td>
+                                    <td><input type="checkbox"></td>
+                                    <td></td>
+                                    <td>GATE 04 (PPT)</td>
+                                    <td>ASIA INDUSTRIAL 8 GUL RD SINGAPORE 629341</td>
+                                    <td>CWT JALAN BUROH</td>
+                                    <td>JURONG</td>
+                                    <td>Round Trip</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td><span class="btn-delete">Delete</span></td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>14/10/2024</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>OOLU 2997012</td>
+                                    <td></td>
+                                    <td>20GP</td>
+                                    <td>0.000</td>
+                                    <td>11540.000</td>
+                                    <td><input type="checkbox"></td>
+                                    <td></td>
+                                    <td>GATE 04 (PPT)</td>
+                                    <td>ASIA INDUSTRIAL 8 GUL RD SINGAPORE 629341</td>
+                                    <td>CWT JALAN BUROH</td>
+                                    <td>JURONG</td>
+                                    <td>Round Trip</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td><span class="btn-delete">Delete</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Footer Buttons -->
+                    <div class="d-flex justify-content-end mt-3">
+                        <button class="btn btn-sm btn-primary me-2">Preview changes</button>
+                        <button class="btn btn-sm btn-primary me-2">Save Changes</button>
+                        <button class="btn btn-sm btn-secondary">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="main-container mt-2 mb-4">
+            <!-- Billing Section -->
+            <div class="container-section mt-2 mb-2">
+                <h4>Billing</h4>
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="container-content">
+                            <div class="btn-group-custom mb-2">
+                                <button class="btn btn-sm btn-primary">Auto Create Charges</button>
+                                <button class="btn btn-sm btn-primary">Add Additional Charges</button>
+                                <button class="btn btn-sm btn-primary">Print Additional Charges Acknowledgement Form</button>
+                            </div>
+                            <div class="checkbox-container mb-2">
+                                <input type="checkbox" id="depotChargesInclude">
+                                <label for="depotChargesInclude"> Depot Charges Include</label>
+                            </div>
+
+                            <div class="table-scrollable">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Charge</th>
+                                            <th>Description</th>
+                                            <th>Trip Code</th>
+                                            <th>From</th>
+                                            <th>To</th>
+                                            <th>Remark</th>
+                                            <th>Container No</th>
+                                            <th>Unit</th>
+                                            <th>Qty</th>
+                                            <th>Price</th>
+                                            <th>Amount</th>
+                                            <th>GST</th>
+                                            <th>Type</th>
+                                            <th>User</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="14" class="text-center">No data to display</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mobile-margin-top mb-1">
+                                <button class="btn btn-sm btn-secondary">Preview changes</button>
+                                <button class="btn btn-sm btn-primary">Save Changes</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="container-content">
+                            <div class="btn-group-custom mb-2">
+                                <button class="btn btn-sm btn-primary">Auto Create Invoice</button>
+                            </div>
+                            <div class="table-scrollable">
+                                <table class="table table-bordered mt-4">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Invoice</th>
+                                            <th>Date</th>
+                                            <th>Party To</th>
+                                            <th>Amount</th>
+                                            <th>GST</th>
+                                            <th>Balance</th>
+                                            <th>Remarks</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td colspan="14" class="text-center">No data to display</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+
+</html>

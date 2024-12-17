@@ -1,0 +1,66 @@
+.main-container {
+    background-color: #f4f4f4;
+    color: black;
+}
+
+.content-header {
+    background-color: #0d6efd;
+    color: white;
+}
+
+.container-content {
+    background-color: white;
+    color: black;
+}
+
+.small-font {
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+
+.collapsible-container {
+    color: #3f76c8;
+    cursor: pointer;
+    padding: 10px;
+    font-weight: bold;
+}
+
+/* status badges class style */
+.status-badges {
+    margin: 10px;
+}
+
+.green-bg {
+    background-color: green;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.orange-bg {
+    background-color: orange;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.calm-bg {
+    background-color: cornflowerblue;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.blue-bg {
+    background-color: blue;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.gray-bg {
+    background-color: gray;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+}

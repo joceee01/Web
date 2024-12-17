@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FCL Trips</title>
+    <link rel="stylesheet" href="../main.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" crossorigin="anonymous"></script>
+    <!-- <link href="https://cdn3.devexpress.com/jslib/21.1.6/css/dx.light.css" rel="stylesheet"> -->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/23.1.4/css/dx.light.css">
+    <script src="https://cdn3.devexpress.com/jslib/23.2.5/js/dx.all.js"></script>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
+    <script src="https://unpkg.com/devextreme-aspnet-data@3.0.0/js/dx.aspnet.data.js"></script>
+
+    <style>
+        .filter-section {
+            width: 80%;
+            margin: 20px;
+        }
+
+        .hidden-section {
+            display: none;
+        }
+
+        #dataGrid {
+            width: 99%;
+            margin: auto;
+        }
+
+        .dx-datagrid .dx-row > tr > td {
+            border: 1px solid #e5e8f0;
+            width: auto;
+        }
+    </style>
+
+    <script>
+        $(document).ready(function () {
+            // Sample data for the grid
+            const trips = [{
+                trip: "COL 16/10 00:00",
+                statusCode: "P",
+                towheadCode: "REN LIGUO",
+                chessisCode: "TRE21A",
+                jobNo: "JN-2410-1275",
+                client: "ASPRESS SHIPPING",
+                containerNo: "BEAU532983",
+                vessel: "SINAR SORONG/0243N",
+                size: "40HC",
+                trailer: "XE5933P",
+                depot: "TRE21A",
+                depotSize: "40FT",
+                remarks: "Shipper: Carrier:"
+            }, {
+                trip: "COL 16/10 00:00",
+                statusCode: "C",
+                client: "AGI FREIGHT",
+                container: "XE6602M",
+                vessel: "PORTO GERMENO/440S",
+                size: "40HC",
+                depot: "XE6602M",
+                remarks: "Shipper: Carrier:"
+            },
+            ];
+
+            // DevExpress Form for Filter Section
+            const form = $("#filter-form").dxForm({
+                labelMode: 'outside',
+                labelLocation: 'top',
+                showColonAfterLabel: false,
+                formWidth: 100,
+                formData: {
+                    scheduleDateFrom: new Date(),
+                    scheduleDateTo: new Date(),
+                    client: "",
+                    status: "In Operation"
+                },
+                items: [
+                    {
+                        itemType: "group",
+                        colCount: 4,
+                        items: [
+                            {
+                                dataField: "scheduleDateFrom",
+                                editorType: "dxDateBox",
+                                label: { text: "Schedule Date (From)" },
+                                editorOptions: {
+                                    displayFormat: "dd/MM/yyyy",
+                                },
+                            },
+                            {
+                                dataField: "scheduleDateTo",
+                                editorType: "dxDateBox",
+                                label: { text: "To" },
+                                editorOptions: {
+                                    displayFormat: "dd/MM/yyyy",
+                                },
+                            },
+                            {
+                                dataField: "client",
+                                editorType: "dxTextBox",
+                                label: { text: "Client" }
+                            },
+                            {
+                                dataField: "status",
+                                editorType: "dxSelectBox",
+                                label: { text: "Job Status" },
+                                editorOptions: {
+                                    items: ["In Operation", "Completed", "Cancelled"]
+                                }
+                            },
+                            {
+                                dataField: "",
+                                editorType: "dxTextBox",
+                                placeHolder: "(end with)",
+                                label: { text: "ClientRef/JobNo/ContNo" },
+                            },
+                            {
+                                dataField: "",
+                                editorType: "dxTextBox",
+                                label: { text: "Vessel/Yard" },
+                            }, {
+                                itemType: 'button',
+                                name: 'Search',
+                                buttonOptions: {
+                                    type: 'default',
+                                    icon: 'search',
+                                    text: 'Search',
+                                }
+                            }
+                        ]
+                    }
+                ]
+            }).dxForm('instance');
+
+            // DevExpress Data Grid
+            $("#dataGrid").dxDataGrid({
+                dataSource: trips,
+                dataRowTemplate: function (container, item) {
+                    const { data } = item;
+                    let statusMarkup = '';
+
+                    // Determine the status and assign the appropriate markup
+                    if (data.statusCode === 'P') {
+                        statusMarkup = '<span class="orange-bg">Pending</span>';
+                    } else if (data.statusCode === 'S') {
+                        statusMarkup = '<span class="green-bg">Started</span>';
+                    } else if (data.statusCode === 'A') {
+                        statusMarkup = '<span class="calm-bg">Assigned</span>';
+                    } else if (data.statusCode === 'C') {
+                        statusMarkup = '<span class="blue-bg">Delivered</span>';
+                    } else if (data.statusCode === 'X') {
+                        statusMarkup = '<span class="gray-bg">Cancelled</span>';
+                    }
+
+                    const markup = `<tr class='main-row' role='row'>`
+                        + `<td class='grid-cell' style="text-align: center;">
+                                    ${data.trip} <br>
+                                    ${data.towheadCode}/${data.chessisCode} <br>
+                                    <div class="status-badges">${statusMarkup}</div>
+                                    ${data.jobNo} <br>
+                                    ZICHENG @15/10#13:31
+                                </td>`
+                        + `<td class='gridcell'>
+                                    ${data.client} <hr>
+                                    JIA CHIAN-65673779 <br>
+                                    ASPSESIH2410321 / KEMIN / SINAR <br>
+                                    SORONG / 0243N <br>
+                                    <a>94863649</a>
+                                </td>`
+                        + `<td class='gridcell'>
+                                    ${data.vessel} <br>
+                                    (OP:) <br>
+                                    TMN: PPT2 <br>
+                                    23/10/2024 1800
+                                </td>`
+                        + `<td class='gridcell'>
+                                    ${data.containerNo}
+                                </td>`
+                        + `<td class='gridcell'>
+                                    ${data.size}
+                                </td>`
+                        + `<td class='gridcell'>
+                                    37 LCH GROUNDED <hr>
+                                    KEMIN INDUSTRIES (ASIA) PTE LIMITED <br>
+                                    12 SENOKO DRIVE <br>
+                                    SINGAPORE 758200 <br>
+                                    MR LIU : 94863649
+                                </td>`
+                        + `<td class='gridcell'>
+                                    ${data.trailer} <hr>
+                                    ${data.depot} ${data.depotSize}
+                                </td>`
+                        + `<td class='gridcell'>
+                                </td>`
+                        + '</tr>';
+
+                    container.append(markup);
+                },
+                columns: [
+                    { caption: "Trip" },
+                    { caption: "Client" },
+                    { caption: "Vessel/OP/TMN/ETA" },
+                    { caption: "Container No" },
+                    { caption: "Size/VGM" },
+                    { caption: "From -> To" },
+                    { caption: "PM/Trailer" },
+                    { dataField: "remarks", caption: "Remarks" }
+                ],
+                showBorders: true,
+                showColumnLines: true,
+                columnAutoWidth: true,
+                allowColumnResizing: true
+            }).dxDataGrid('instance');
+
+            // Toggle the collapsible section
+            $(".collapsible-container").on("click", function () {
+                $("#empty-container-content").slideToggle();
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="filter-section">
+        <div id="filter-form"></div>
+    </div>
+
+    <div class="main-container">
+        <div class="collapsible-container">Empty Container (<span id="totalTrips"></span>)</div>
+        <div id="empty-container-content" class="hidden-section grid-container">
+            <div id="dataGrid"></div>
+        </div>
+    </div>
+
+
+</body>
+
+</html>
